@@ -4,6 +4,7 @@ import guru.springframework.domain.*;
 import guru.springframework.repositories.CategoryRepository;
 import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.repositories.UnitOfMeasureRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.Optional;
 /**
  * Created by jt on 6/13/17.
  */
+@Slf4j
 @Component
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -31,7 +33,9 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
+
         recipeRepository.saveAll(getRecipes());
+        log.debug("loading Bootstrap DAta");
     }
 
     private List<Recipe> getRecipes() {
@@ -41,37 +45,37 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         //get UOMs
         Optional<UnitOfMeasure> eachUomOptional = unitOfMeasureRepository.findByDescription("Each");
 
-        if(!eachUomOptional.isPresent()){
+        if (!eachUomOptional.isPresent()) {
             throw new RuntimeException("Expected UOM Not Found");
         }
 
         Optional<UnitOfMeasure> tableSpoonUomOptional = unitOfMeasureRepository.findByDescription("Tablespoon");
 
-        if(!tableSpoonUomOptional.isPresent()){
+        if (!tableSpoonUomOptional.isPresent()) {
             throw new RuntimeException("Expected UOM Not Found");
         }
 
         Optional<UnitOfMeasure> teaSpoonUomOptional = unitOfMeasureRepository.findByDescription("Teaspoon");
 
-        if(!teaSpoonUomOptional.isPresent()){
+        if (!teaSpoonUomOptional.isPresent()) {
             throw new RuntimeException("Expected UOM Not Found");
         }
 
         Optional<UnitOfMeasure> dashUomOptional = unitOfMeasureRepository.findByDescription("Dash");
 
-        if(!dashUomOptional.isPresent()){
+        if (!dashUomOptional.isPresent()) {
             throw new RuntimeException("Expected UOM Not Found");
         }
 
         Optional<UnitOfMeasure> pintUomOptional = unitOfMeasureRepository.findByDescription("Pint");
 
-        if(!pintUomOptional.isPresent()){
+        if (!pintUomOptional.isPresent()) {
             throw new RuntimeException("Expected UOM Not Found");
         }
 
         Optional<UnitOfMeasure> cupsUomOptional = unitOfMeasureRepository.findByDescription("Cup");
 
-        if(!cupsUomOptional.isPresent()){
+        if (!cupsUomOptional.isPresent()) {
             throw new RuntimeException("Expected UOM Not Found");
         }
 
@@ -86,18 +90,24 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         //get Categories
         Optional<Category> americanCategoryOptional = categoryRepository.findByDescription("American");
 
-        if(!americanCategoryOptional.isPresent()){
+        if (!americanCategoryOptional.isPresent()) {
             throw new RuntimeException("Expected Category Not Found");
         }
 
         Optional<Category> mexicanCategoryOptional = categoryRepository.findByDescription("Mexican");
 
-        if(!mexicanCategoryOptional.isPresent()){
+        if (!mexicanCategoryOptional.isPresent()) {
             throw new RuntimeException("Expected Category Not Found");
         }
 
+        Optional<Category> chinesCategoryOptional = categoryRepository.findByDescription("Chines");
+
+        if (!mexicanCategoryOptional.isPresent()) {
+            throw new RuntimeException("Expected Category Not Found");
+        }
         Category americanCategory = americanCategoryOptional.get();
         Category mexicanCategory = mexicanCategoryOptional.get();
+        Category chinesCategory = chinesCategoryOptional.get();
 
         //Yummy Guac
         Recipe guacRecipe = new Recipe();
@@ -201,6 +211,44 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         tacosRecipe.getCategories().add(mexicanCategory);
 
         recipes.add(tacosRecipe);
+
+
+        Recipe padThai = new Recipe();
+        padThai.setCookTime(15);
+        padThai.setPrepTime(8);
+        padThai.setDescription("Awesome griled Pasta");
+        padThai.setDifficulty(Difficulty.EASY);
+        padThai.setDirections("Soak rice noodles in cold water 30 to 50 minutes, or until soft. Drain, and set aside.\n" +
+                "Heat butter in a wok or large heavy skillet. Saute chicken until browned. Remove, and set aside. Heat oil in wok over medium-high heat. \n" +
+                "Crack eggs into hot oil, and cook until firm. Stir in chicken, and cook for 5 minutes. Add softened noodles, and vinegar, fish sauce, \n" +
+                "sugar and red pepper. Adjust seasonings to taste. Mix while cooking, until noodles are tender. Add bean sprouts, and mix for 3 minutes");
+
+        padThai.addIngredient(new Ingredient("Pasta",new BigDecimal(1),eachUom));
+        padThai.addIngredient(new Ingredient("chicken",new BigDecimal(2),eachUom));
+        padThai.addIngredient(new Ingredient("cherry tomatoes, halved", new BigDecimal(".5"), pintUom));
+        padThai.addIngredient(new Ingredient("red onion, thinly sliced", new BigDecimal(".25"), eachUom));
+        padThai.addIngredient(new Ingredient("Sugar", new BigDecimal(1), teapoonUom));
+        padThai.addIngredient(new Ingredient("Salt", new BigDecimal(".5"), teapoonUom));
+        padThai.addIngredient(new Ingredient("Ancho Chili Powder", new BigDecimal(2), tableSpoonUom));
+        padThai.addIngredient(new Ingredient("Dried Oregano", new BigDecimal(1), teapoonUom));
+        padThai.addIngredient(new Ingredient("Eggs", new BigDecimal(3), eachUom));
+        padThai.addIngredient(new Ingredient("Butter", new BigDecimal(5), teapoonUom));
+        padThai.addIngredient(new Ingredient("freshly grated black pepper", new BigDecimal(2), dashUom));
+        padThai.addIngredient(new Ingredient("ripe tomato, seeds and pulp removed, chopped", new BigDecimal(".5"), eachUom));
+
+        padThai.addIngredient(new Ingredient());
+
+        Notes padThaiNotes = new Notes();
+
+        padThaiNotes.setRecipeNotes("Pad thai is made with soaked dried rice noodles, " +
+                " \n which are stir-fried with eggs and chopped firm tofu, " +
+                "\n and is flavored with tamarind pulp, fish sauce, dried shrimp," +
+                "\n garlic or shallots, red chili pepper and palm sugar and served with lime wedges and often chopped roasted peanuts.");
+
+        padThai.getCategories().add(chinesCategory);
+        padThai.setNotes(padThaiNotes);
+
+recipes.add(padThai);
         return recipes;
     }
 }
