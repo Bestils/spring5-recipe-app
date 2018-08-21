@@ -1,6 +1,5 @@
 package guru.springframework.servicesTests;
 
-import com.sun.org.apache.regexp.internal.RE;
 import guru.springframework.domain.Recipe;
 import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.services.RecipeServiceImpl;
